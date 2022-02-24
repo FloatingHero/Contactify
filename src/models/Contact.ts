@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToMany } from 'typeorm';
-import {User} from './User';
+import { User } from './User';
 
 @Entity('contacts')
 export class Contact {
@@ -21,7 +21,6 @@ export class Contact {
   @Column({ nullable: true, type: 'varchar' })
   image!: string;
 
-  @ManyToMany(() => User, user => user.contacts)
-  users!: User[]
-
+  @ManyToMany(() => User, (user) => user.contacts)
+  users!: User[];
 }
