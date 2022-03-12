@@ -9,7 +9,7 @@ export class Contact {
   @Column({ nullable: false, type: 'varchar' })
   name!: string;
 
-  @Column({ nullable: false, type: 'varchar' })
+  @Column({ nullable: true, type: 'varchar' })
   surname!: string;
 
   @Column({ nullable: true, unique: true, type: 'varchar' })
@@ -21,6 +21,8 @@ export class Contact {
   @Column({ nullable: true, type: 'varchar' })
   image!: string;
 
-  @ManyToMany(() => User, (user) => user.contacts)
+  @ManyToMany(() => User, (user) => user.contacts, {
+    cascade: ['insert', 'remove'],
+  })
   users!: User[];
 }

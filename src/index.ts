@@ -5,6 +5,7 @@ import 'reflect-metadata';
 import { createConnection } from 'typeorm';
 import morgan from 'morgan';
 import cors from 'cors';
+import path from 'path';
 
 const app: express.Application = express();
 dotenv.config();
@@ -13,9 +14,8 @@ createConnection();
 
 app.set('port', process.env.APP_PORT || 3000);
 
-//middlewares
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 app.use(
   cors({
@@ -24,6 +24,7 @@ app.use(
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   })
 );
+app.use(express.static(path.join(__dirname, 'public')));
 
 //routes
 app.use('/api', apiRoutes);

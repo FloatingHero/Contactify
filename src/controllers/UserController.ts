@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { getRepository, getManager } from 'typeorm';
+import { getManager } from 'typeorm';
 import { User } from '../models/User';
 import bcrypt from '../lib/bcrypt';
 import jwt from 'jsonwebtoken';
@@ -22,16 +22,16 @@ class UserController {
         }),
       });
     } else {
-      const user = new User();
-      user.name = req.body.name;
-      user.email = req.body.email;
-      user.password = bcrypt.crypt(req.body.password);
+      const { name, email, password, image_name } = req.body;
+      const user = getManager().create(User, {
+        name: name,
+        email: email,
+        password: bcrypt.crypt(password),
+        profile_image: image_name,
+      });
 
-      if (req.body.profile_image_name) {
-        user.profile_image = req.body.profile_image_name;
-      }
+      await getManager().save(user);
 
-      await getRepository(User).save(user);
       return res.status(201).json('¡Registro exitoso!');
     }
   }

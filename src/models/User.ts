@@ -25,7 +25,7 @@ export class User {
   profile_image!: string;
 
   //* relationships
-  @ManyToMany(() => Contact)
+  @ManyToMany(() => Contact, contact => contact.users)
   @JoinTable({ name: 'users_contacts' })
   contacts!: Contact[];
 }
