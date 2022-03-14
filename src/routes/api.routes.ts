@@ -4,6 +4,7 @@ import upload from '../lib/upload';
 import registerSchema from '../validations/register_validations';
 import loginSchema from '../validations/login_validations';
 import ContactController from '../controllers/ContactController';
+import contactSchema from '../validations/contact_validations';
 
 const route: Router = Router();
 
@@ -18,9 +19,9 @@ route.post('/upload', upload('image'), (req: Request, res: Response) => {
 });
 
 route.get('/contacts/:user_id', ContactController.index);
-route.post('/contact/store', ContactController.store);
+route.post('/contact/store', contactSchema, ContactController.store);
 route.post('/contact/delete/:id', ContactController.delete);
 route.get('/contact/:id', ContactController.getContact);
-route.post('/contact/edit', ContactController.editContact);
+route.post('/contact/edit', contactSchema, ContactController.editContact);
 
 export default route;

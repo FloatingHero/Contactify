@@ -3,6 +3,8 @@ import { getManager, getRepository } from 'typeorm';
 import { User } from '../models/User';
 import { Contact } from '../models/Contact';
 import * as fs from 'fs';
+import { Result, ValidationError, validationResult } from 'express-validator';
+import upload from '../lib/upload';
 
 class ContactController {
   async index(req: Request, res: Response): Promise<Response> {
@@ -21,6 +23,13 @@ class ContactController {
 
   async store(req: Request, res: Response): Promise<any> {
     const { name, surname, email, tel, image_name, user_id } = req.body;
+    const errors: Result<ValidationError> = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(422).json({
+        errors: errors.array({ onlyFirstError: true }),
+      });
+    }
 
     const contact: Contact = getManager().create(Contact, {
       name: name,
@@ -67,8 +76,23 @@ class ContactController {
 
   async editContact(req: Request, res: Response) {
     const { id, name, surname, email, tel, image_name } = req.body;
+    const errors: Result<ValidationError> = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(422).json({
+        errors: errors.array({ onlyFirstError: true }),
+      });
+    }
 
     const contact: Contact = await getRepository(Contact).findOneOrFail(id);
+
+    if (image_name !== contact.image) {
+      const fileToDelete = `src/public/img/${contact.image}`;
+
+      if (fs.existsSync(fileToDelete)) {
+        fs.rmSync(fileToDelete);
+      }
+    }
 
     getRepository(Contact).merge(contact, {
       name,
