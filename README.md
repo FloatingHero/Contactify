@@ -1,5 +1,8 @@
-# Express-TypeScript-Setup
-A initial setup for a Typescript-Express Project
+# Contactify API
+API de Contactify hecha 100% con Typescript, usando TypeORM para las consultas a una base de datos SQL. 
+
+## Se debe instalar primero la API y luego el proyecto frontend
+https://github.com/FloatingHero/Contactify-Front
 
 # Steps to guide
 ```
