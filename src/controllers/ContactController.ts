@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
-import { getManager } from 'typeorm';
+import { getManager, getRepository } from 'typeorm';
 import { User } from '../models/User';
 import { Contact } from '../models/Contact';
+import * as fs from 'fs';
 
 class ContactController {
   async index(req: Request, res: Response): Promise<Response> {
@@ -34,12 +35,52 @@ class ContactController {
     const user: User = await getManager().findOneOrFail(User, user_id, {
       relations: ['contacts'],
     });
-    
+
     user.contacts.push(contact);
 
     getManager().save(user);
 
+    return res.json('¡Contacto creado con éxito!');
+  }
+
+  async delete(req: Request, res: Response) {
+    const contact = await getManager().findOneOrFail(Contact, req.params.id);
+    const fileToDelete = `src/public/img/${contact.image}`;
+
+    if (fs.existsSync(fileToDelete)) {
+      fs.rmSync(fileToDelete, { force: true });
+    }
+
+    getManager().remove(contact);
+
+    return res.json('¡Contacto eliminado con éxito!');
+  }
+
+  async getContact(req: Request, res: Response): Promise<Response> {
+    const contact: Contact = await getManager().findOneOrFail(
+      Contact,
+      req.params.id
+    );
+
     return res.json(contact);
+  }
+
+  async editContact(req: Request, res: Response) {
+    const { id, name, surname, email, tel, image_name } = req.body;
+
+    const contact: Contact = await getRepository(Contact).findOneOrFail(id);
+
+    getRepository(Contact).merge(contact, {
+      name,
+      surname,
+      email,
+      tel,
+      image: image_name,
+    });
+
+    await getRepository(Contact).save(contact);
+
+    return res.json('¡Contacto editado con éxito');
   }
 }
 
